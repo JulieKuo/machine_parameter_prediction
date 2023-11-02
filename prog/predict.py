@@ -174,7 +174,16 @@ class Predict():
                         
                     result = 2 if mode_pred == [] else mode(mode_pred)
                 else:
-                    result, compensate = (4, "NC_FIX_1") if pred["adjust"] == 0 else (5, "NC_FIX_2")  
+                    result, compensate = (4, "NC_FIX_1") if pred["adjust"] == 0 else (5, "NC_FIX_2")
+
+                
+                # fix A180+A0 compensate, split XY to X & Y 
+                if self.directions["A0+A180"]["name"] in compensate:
+                    XY = compensate[self.directions["A0+A180"]["name"]]["left_right"].pop("XY")
+                    compensate[self.directions["A0+A180"]["name"]]["left_right"].update({
+                        "X": XY,
+                        "Y": XY
+                    })
 
 
                 result = {    
