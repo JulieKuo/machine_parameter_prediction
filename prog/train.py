@@ -5,7 +5,7 @@ from split_data import split_data
 from train_ng1_3 import ng1_3
 from train_ng4_5 import ng4_5
 from log_config import Log
-from tools import *
+from tool import *
 
 warnings.filterwarnings("ignore")
 

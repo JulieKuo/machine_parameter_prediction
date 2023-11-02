@@ -4,7 +4,6 @@ from sklearn.model_selection import train_test_split, cross_val_score
 from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay, f1_score
 from sklearn.ensemble import RandomForestClassifier
 import matplotlib.pyplot as plt
-import seaborn as sns
 plt.rcParams['font.sans-serif'] = ['Taipei Sans TC Beta']
 
 
