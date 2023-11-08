@@ -16,16 +16,16 @@ class Model():
     def __init__(self, root, input_, logging):
         self.logging  = logging
         self.model_id = input_["model_id"]
-        self.start_time = datetime.strptime(input_["start_time"], '%Y-%m-%d')
-        self.end_time = datetime.strptime(input_["end_time"], '%Y-%m-%d')
+        self.start_time = datetime.strptime(input_["start_time"] + " 00:00:00", '%Y-%m-%d %H:%M:%S')
+        self.end_time = datetime.strptime(input_["end_time"] + " 23:59:59", '%Y-%m-%d %H:%M:%S')
         self.model_type = input_["model_type"]
 
 
         # 取得train位置
         train_path = os.path.join(root, "data", "train")        
         os.makedirs(train_path, exist_ok = True)
-        self.data    = os.path.join(train_path, "train.xlsx")        
-        self.data_split    = os.path.join(train_path, "train_split.xlsx")
+        self.data = os.path.join(train_path, "train.xlsx")        
+        self.data_split = os.path.join(train_path, "train_split.xlsx")
         self.output_json = os.path.join(train_path, "output.json")
 
 
