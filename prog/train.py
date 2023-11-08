@@ -16,8 +16,8 @@ class Model():
     def __init__(self, root, input_, logging):
         self.logging  = logging
         self.model_id = input_["model_id"]
-        self.start_time = datetime.strptime(input_["start_time"], '%Y-%m-%d %H:%M:%S')
-        self.end_time = datetime.strptime(input_["end_time"], '%Y-%m-%d %H:%M:%S')
+        self.start_time = datetime.strptime(input_["start_time"], '%Y-%m-%d')
+        self.end_time = datetime.strptime(input_["end_time"], '%Y-%m-%d')
         self.model_type = input_["model_type"]
 
 
