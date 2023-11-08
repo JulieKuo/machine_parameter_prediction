@@ -6,6 +6,7 @@ from train_ng1_3 import ng1_3
 from train_ng4_5 import ng4_5
 from log_config import Log
 from tool import *
+from datetime import datetime
 
 warnings.filterwarnings("ignore")
 
@@ -15,8 +16,8 @@ class Model():
     def __init__(self, root, input_, logging):
         self.logging  = logging
         self.model_id = input_["model_id"]
-        self.start_time = input_["start_time"]
-        self.end_time = input_["end_time"]
+        self.start_time = datetime.strptime(input_["start_time"], '%Y-%m-%d %H:%M:%S')
+        self.end_time = datetime.strptime(input_["end_time"], '%Y-%m-%d %H:%M:%S')
         self.model_type = input_["model_type"]
 
 
@@ -56,6 +57,7 @@ class Model():
         try:
             self.logging.info(f"Get data from {self.data}")
             df_raw = pd.read_excel(self.data, sheet_name = "simulation", header = [0, 1, 2, 3])
+            df_raw.iloc[:, 0] = pd.to_datetime(df_raw.iloc[:, 0])
             self.df_raw = df_raw[(self.start_time <= df_raw.iloc[:, 0]) & (df_raw.iloc[:, 0] <= self.end_time)]
             print(f"raw:      columns: {self.df_raw.shape[1]}, length: {self.df_raw.shape[0]}")
             if self.df_raw.empty:
