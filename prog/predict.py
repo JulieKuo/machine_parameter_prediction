@@ -172,7 +172,15 @@ class Predict():
                         
                         mode_pred.append(adjust) # 最後result從所有adjust中不為NG2的取眾數
                         
-                    result = 2 if mode_pred == [] else mode(mode_pred)
+                    # get result
+                    if "P15" in compensate:
+                        result = 3
+                    elif "P14" in compensate:
+                        result = 2
+                    elif "P13" in compensate:
+                        result = 1
+                    else:
+                        result = 0
                 else:
                     result, compensate = (4, "NC_FIX_1") if pred["adjust"] == 0 else (5, "NC_FIX_2")
 
