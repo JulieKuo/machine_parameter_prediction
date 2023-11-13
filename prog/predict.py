@@ -1,4 +1,4 @@
-import os, json, sys, pickle
+import os, json, sys, pickle, math
 import pandas as pd
 from statistics import mode
 from traceback import format_exc
@@ -71,6 +71,8 @@ class Predict():
             else: # NG
                 self.logging.info("Choose the adjustment method.")
                 # calculate total ER by each side
+                left_DV_col = [col for col in df.columns if ("DV" in col) and ("左邊" in col) and ("右邊" not in col)]
+                right_DV_col = [col for col in df.columns if ("DV" in col) and ("右邊" in col) and ("左邊" not in col)]
                 left_ER_col = [col for col in df.columns if ("ER" in col) and ("左邊" in col) and ("右邊" not in col)]
                 right_ER_col = [col for col in df.columns if ("ER" in col) and ("右邊" in col) and ("左邊" not in col)]
                 left  = df[left_ER_col].sum(axis = 1)
@@ -158,9 +160,16 @@ class Predict():
                         else:
                             side = "left_right"
 
-                        adjust1 = -0.001 if (adjust == 1) else 0.001 # NG1: -0.001, NG2: 0, NG3: +0.001
+                        # adjust
+                        error = df.loc[0, primary + '_ER'] / 2
+                        adjust1 = math.floor(error * 1000) / 1000 if error > 0 else math.ceil(error * 1000) / 1000
+                        if (adjust1 == 0) and (adjust == 1):
+                            adjust1 = -0.001 
+                        elif  (adjust1 == 0) and (adjust == 3):
+                            adjust1 = 0.001 
 
-                        if (direction in compensate) and (side in compensate[direction]):
+                        # compensate
+                        if (direction in compensate):
                             compensate[direction][side] = {"no": no, point: adjust1}
                         else:
                             compensate[direction] = {
@@ -184,6 +193,17 @@ class Predict():
                 else:
                     result, compensate = (4, "NC_FIX_1") if pred["adjust"] == 0 else (5, "NC_FIX_2")
 
+                    if result == 4:
+                        df1 = df[right_DV_col].abs().T.reset_index()
+                        idx = abs(df1[0]).idxmax()
+                        nc_type = "4" + str(idx)
+                        replace_val = df1.loc[idx, 0]
+                    else:
+                        df1 = df[left_DV_col].abs().T.reset_index()
+                        idx = abs(df1[0]).idxmax()
+                        nc_type = "5" + str(idx)
+                        replace_val = df1.loc[idx, 0]
+
                 
                 # fix A180+A0 compensate, split XY to X & Y 
                 if self.directions["A0+A180"]["name"] in compensate:
@@ -204,6 +224,12 @@ class Predict():
                 
                 if compensate:
                     result["compensate"] = compensate
+
+                if result["result"] in [4, 5]:
+                    result.update({
+                        "nc_type": nc_type,
+                        "replace_val": replace_val
+                    })
             
         
         except:
